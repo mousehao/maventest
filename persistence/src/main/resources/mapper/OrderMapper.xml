@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="maven.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="common.model.Order">
+    </resultMap>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * FROM "order" WHERE id=#{id}
+    </select>
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO "order"(id, orderName, createTime)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.orderName},#{item.createTime})
+        </foreach>
+    </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM "order"
+    </select>
+
+</mapper>

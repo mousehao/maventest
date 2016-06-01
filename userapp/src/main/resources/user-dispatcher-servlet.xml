@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <!--json消息处理 需在 annotation-driven 前面，请勿移动 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" >
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    <context:component-scan base-package="controller"/>
+    <!--<mvc:annotation-driven validator="validator" />-->
+
+    <bean
+		class="util.SpringContextHolder" lazy-init="false" />
+
+
+    <bean id="conversionService"
+          class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <!--自定义类型转换-->
+                <!--<bean class="com.huawei.fda.web.converter.StringToDateConverter"/>-->
+            </set>
+        </property>
+    </bean>
+
+
+    <!-- 静态资源的访问 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--<mvc:resources mapping="/css/**" location="/css/" />-->
+    <!--<mvc:resources mapping="/js/**" location="/js/" />-->
+    <!--<mvc:resources mapping="/img/**" location="/img/" />-->
+    <!--<mvc:resources mapping="/statichtml/**" location="/statichtml/" />-->
+    <!--<mvc:resources mapping="/openapi/**" location="/openapi/"/>-->
+    <!--<mvc:resources mapping="/widget/**" location="/widget/"/>-->
+
+    <!--配置视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--请求转发的目录 -->
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 国际化 begin -->
+    <!-- 定义国际化消息-->
+    <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">-->
+        <!--&lt;!&ndash;   其中basename用来指定properties文件的通用名-->
+                 <!--如实例中的messages_en.properties,messages_zh.properties通用名都是messages-->
+         <!--&ndash;&gt;-->
+        <!--<property name="basename" value="message_i18n.messages"/>-->
+        <!--<property name="useCodeAsDefaultMessage" value="true" />-->
+        <!--&lt;!&ndash;<property name="cacheSeconds" value="0" />&ndash;&gt;-->
+        <!--<property name="defaultEncoding" value="UTF-8"/>-->
+
+    <!--</bean>-->
+
+    <!--<bean id="validator"-->
+          <!--class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">-->
+        <!--<property name="validationMessageSource"  ref="messageSource" />-->
+    <!--</bean>-->
+
+    <!-- 获取本地 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/>
+
+    <!-- 国际化 end -->
+
+    <!--文件上传-->
+    <!-- SpringMVC上传文件时,需配置MultipartResolver处理器 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 指定所上传文件的总大小不能超过800KB......注意maxUploadSize属性的限制不是针对单个文件,而是所有文件的容量之和 -->
+        <!--<property name="maxUploadSize" value="2097152"/>-->
+        <property name="maxUploadSize" value="104857600"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <!-- SpringMVC在超出上传文件限制时,会抛出org.springframework.web.multipart.MaxUploadSizeExceededException -->
+    <!-- 该异常是SpringMVC在检查上传的文件信息时抛出来的,而且此时还没有进入到Controller方法中 -->
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!--<property name="defaultErrorView" value="common/error"></property>-->
+        <property name="exceptionMappings">
+            <props>
+
+            </props>
+        </property>
+    </bean>
+    <bean name="/board/upload.test" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="/board/upload"></property>
+    </bean>
+
+    <bean name="/error/noPrivilege.screen"
+          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+
+    <bean name="/device/deviceMaintain.screen"
+          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+
+    <bean name="/common/error.screen"
+          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
+</beans>

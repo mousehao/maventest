@@ -1,0 +1,12 @@
+CREATE TABLE public."order" (
+  id CHARACTER VARYING(50) PRIMARY KEY NOT NULL,
+  "orderName" CHARACTER VARYING(255),
+  "createTime" DATE
+);
+
+CREATE TABLE public."user" (
+  id CHARACTER VARYING(50) PRIMARY KEY NOT NULL,
+  name CHARACTER VARYING(255),
+  sex CHARACTER VARYING(255),
+  "createTime" DATE
+);
